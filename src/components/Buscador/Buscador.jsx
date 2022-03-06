@@ -4,6 +4,7 @@ import {
   addMovieFavorite,
   getMovies,
   removeMovieFavorite,
+  setLoading
 } from "../../actions/index.js";
 import { useHistory } from "react-router-dom";
 import Box from "@mui/material/Box";
@@ -20,6 +21,7 @@ import Grid from "@mui/material/Grid";
 import { styled } from "@mui/material/styles";
 import Fade from "@mui/material/Fade";
 import Zoom from '@mui/material/Zoom';
+import CircularProgress from '@mui/material/CircularProgress';
 import { TransitionGroup } from "react-transition-group";
 
 const CardContentNoPadding = styled(CardContent)(`
@@ -34,6 +36,7 @@ function Buscador({
   addMovieFavorite,
   favs,
   movies,
+  loading
 }) {
   const [title, setTitle] = useState();
   const history = useHistory();
@@ -48,21 +51,21 @@ function Buscador({
   }
 
   function handleClickFav(movie) {
-    favs.filter((m) => m.imdbID === movie.imdbID).length
-      ? removeMovieFavorite(movie.imdbID)
+    favs.filter((m) => m.id === movie.id).length
+      ? removeMovieFavorite(movie.id)
       : addMovieFavorite(movie);
   }
 
   function renderMovie(movie) {
     return (
       <Grid item xs={12} sm={4} md={2} lg={1.5} sx={{ p: 0.5 }}>
-        <Card key={movie.imdbID} sx={{ border: 1, color: "primary.main" }}>
+        <Card sx={{ border: 1, color: "primary.main" }}>
           <CardMedia
             component="img"
             height="200"
-            image={movie.Poster}
-            alt={movie.Title}
-            onClick={() => history.push(`/movie/${movie.imdbID}`)}
+            image={`http://image.tmdb.org/t/p/w185/${movie.poster_path}`}
+            alt={movie.title}
+            onClick={() => history.push(`/movie/${movie.id}`)}
             sx={{ cursor: "pointer" }}
           />
           <CardContentNoPadding sx={{ pt: 1, px: 1.5 }}>
@@ -71,9 +74,9 @@ function Buscador({
               variant="subtitle2"
               component="div"
               sx={{ height: 50, cursor: "pointer", color: "white" }}
-              onClick={() => history.push(`/movie/${movie.imdbID}`)}
+              onClick={() => history.push(`/movie/${movie.id}`)}
             >
-              {movie.Title}
+              {movie.title}
             </Typography>
             <Box
               sx={{
@@ -83,14 +86,14 @@ function Buscador({
               }}
             >
               <Typography variant="body2" color="text.secondary">
-                {movie.Year}
+                {movie.release_date?.slice(0, 4)}
               </Typography>
               <IconButton
                 aria-label="fav"
                 onClick={() => handleClickFav(movie)}
                 sx={{ p: 0 }}
               >
-                {favs.filter((m) => m.imdbID === movie.imdbID).length ? (
+                {favs.filter((m) => m.id === movie.id).length ? (
                   <Zoom in={true}><FavoriteIcon sx={{ color: "Crimson" }} /></Zoom>
                 ) : (
                   <Fade in={true} timeout={700}><FavoriteBorderIcon /></Fade>
@@ -125,15 +128,16 @@ function Buscador({
           </Box>
         </form>
       </Box>
+      {!loading ? movies.length ?
       <Box sx={{ mt: 1 }}>
         <TransitionGroup>
           <Grid container>
-            {movies?.map((movie, i) => (
-              <Fade timeout={i * 300} key={movie.imdbID} in={true}>{renderMovie(movie)}</Fade>
+            {movies.map((movie, i) => (
+              <Fade timeout={i * 300} key={movie.id} in={true}>{renderMovie(movie)}</Fade>
             ))}
           </Grid>
         </TransitionGroup>
-      </Box>
+      </Box> : "No se encontraron resultados" : <Box><CircularProgress /></Box>}
     </Box>
   );
 }
@@ -142,6 +146,7 @@ function mapStateToProps(state) {
   return {
     movies: state.moviesLoaded,
     favs: state.moviesFavourites,
+    loading: state.loading
   };
 }
 
@@ -149,7 +154,7 @@ function mapDispatchToProps(dispatch) {
   return {
     addMovieFavorite: (movie) => dispatch(addMovieFavorite(movie)),
     getMovies: (title) => dispatch(getMovies(title)),
-    removeMovieFavorite: (movie) => dispatch(removeMovieFavorite(movie)),
+    removeMovieFavorite: (movie) => dispatch(removeMovieFavorite(movie))
   };
 }
 

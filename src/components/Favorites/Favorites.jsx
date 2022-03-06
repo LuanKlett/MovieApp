@@ -16,7 +16,7 @@ function ConnectedList({ fav, removeMovieFavorite, handleClose }) {
   const history = useHistory();
   function handleClick(movie) {
     handleClose();
-    history.push(`/movie/${movie.imdbID}`)
+    history.push(`/movie/${movie.id}`)
   }
   return fav.length ? (
     <List sx={{ width: 350, maxHeight: 300 }}>
@@ -24,12 +24,12 @@ function ConnectedList({ fav, removeMovieFavorite, handleClose }) {
         /* Aqui deberias poner tu lista de peliculas! */
         fav.map((movie) => (
           <ListItem
-            key={movie.imdbID}
+            key={movie.id}
             secondaryAction={
               <IconButton
                 edge="end" 
                 aria-label="delete"
-                onClick={() => removeMovieFavorite(movie.imdbID)}
+                onClick={() => removeMovieFavorite(movie.id)}
               >
                 <DeleteIcon />
               </IconButton>
@@ -37,13 +37,13 @@ function ConnectedList({ fav, removeMovieFavorite, handleClose }) {
           >
             <ListItemButton sx={{p: 0, m: 0}} onClick={() => handleClick(movie)}>
             <ListItemAvatar>
-              <Avatar variant="square" sx={{ height: 60 }} src={movie.Poster} />
+              <Avatar variant="square" sx={{ height: 60 }} src={`http://image.tmdb.org/t/p/w185/${movie.poster_path}`} />
             </ListItemAvatar>
             <ListItemText
               primary={
-                <Typography variant="subtitle2">{movie.Title}</Typography>
+                <Typography variant="subtitle2">{movie.title}</Typography>
               }
-              secondary={<Typography variant="body2">{movie.Year}</Typography>}
+              secondary={<Typography variant="body2">{movie.release_date.slice(0, 4)}</Typography>}
             />
             </ListItemButton>
           </ListItem>

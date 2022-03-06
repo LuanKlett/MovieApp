@@ -3,8 +3,9 @@ import { connect } from "react-redux";
 import {
   getMovieDetail,
   addMovieFavorite,
-  removeMovieFavorite,
+  removeMovieFavorite
 } from "../../actions/index";
+import Collapse from "./Collapse";
 import { useParams } from "react-router-dom";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
@@ -17,6 +18,7 @@ import Zoom from "@mui/material/Zoom";
 import IconButton from "@mui/material/IconButton";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
+import CircularProgress from '@mui/material/CircularProgress';
 
 function Movie({
   getMovieDetail,
@@ -24,6 +26,7 @@ function Movie({
   removeMovieFavorite,
   detail,
   favs,
+  loading
 }) {
   const params = useParams();
 
@@ -32,12 +35,13 @@ function Movie({
   }, [getMovieDetail, params.id]);
 
   function handleClickFav(movie) {
-    favs.filter((m) => m.imdbID === movie.imdbID).length
-      ? removeMovieFavorite(movie.imdbID)
+    favs.filter((m) => m.id === movie.id).length
+      ? removeMovieFavorite(movie.id)
       : addMovieFavorite(movie);
   }
 
   return (
+    detail && !loading ?
     <Box sx={{ m: 1, display: "flex", justifyContent: "center", p: 2, pt: 0 }}>
       <Grid
         container
@@ -49,28 +53,28 @@ function Movie({
           md={4}
           sx={{ display: "flex", justifyContent: "center", p: 1 }}
         >
-          <CardMedia component="img" alt={detail.Title} image={detail.Poster} />
+          <CardMedia component="img" alt={detail.title} image={`http://image.tmdb.org/t/p/w780/${detail.poster_path}`} />
         </Grid>
         <Grid item xs={12} sm={8} sx={{ p: 1 }}>
           <Paper elevation={5} sx={{ p: 2, position: "relative" }}>
-            <Typography variant="h3">{detail.Title}</Typography>
+            <Typography variant="h3">{detail.title}</Typography>
             <Rating
-              value={parseFloat(detail.imdbRating) / 2}
+              value={parseFloat(detail.vote_average) / 2}
               precision={0.1}
               readOnly
             />
-            <Typography variant="h6">{detail.Year}</Typography>
-            <Typography variant="body2">Genre: {detail.Genre}</Typography>
-            <Typography variant="body2">Director: {detail.Director}</Typography>
-            <Typography variant="body2">Actors: {detail.Actors}</Typography>
+            <Typography variant="h6">{detail.release_date.slice(0, 4)}</Typography>
+            <Typography variant="body2">Genres: {detail.genres.map((m, i) => i !== detail.genres.length - 1 ? <span key={'g' + m.id}>{m.name}, </span> : <span>{m.name}</span>)}</Typography>
+            <Typography variant="body2">Director: {detail.crew.find(c => c.job === "Director").name}</Typography>
+            <Typography variant="body2">Actors: {<Collapse arr={detail.cast} letter='a' />}</Typography>
             <br />
-            <Typography variant="body2">{detail.Plot}</Typography>
+            <Typography variant="body2">{detail.overview}</Typography>
             <IconButton
               aria-label="fav"
               onClick={() => handleClickFav(detail)}
               sx={{ p: 0, mt: 2 }}
             >
-              {favs.filter((m) => m.imdbID === detail.imdbID).length ? (
+              {favs.filter((m) => m.id === detail.id).length ? (
                 <Zoom in={true}>
                   <FavoriteIcon sx={{ color: "Crimson" }} fontSize="large" />
                 </Zoom>
@@ -83,7 +87,7 @@ function Movie({
           </Paper>
         </Grid>
       </Grid>
-    </Box>
+    </Box> : <Box><CircularProgress /></Box>
   );
 }
 
@@ -91,6 +95,7 @@ function mapStateToProps(state) {
   return {
     detail: state.movieDetail,
     favs: state.moviesFavourites,
+    loading: state.loading
   };
 }
 
@@ -98,7 +103,7 @@ function mapDispatchToProps(dispatch) {
   return {
     getMovieDetail: (id) => dispatch(getMovieDetail(id)),
     addMovieFavorite: (movie) => dispatch(addMovieFavorite(movie)),
-    removeMovieFavorite: (movie) => dispatch(removeMovieFavorite(movie)),
+    removeMovieFavorite: (movie) => dispatch(removeMovieFavorite(movie))
   };
 }
 
