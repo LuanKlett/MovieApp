@@ -1,16 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
+import { connect } from "react-redux";
+import { getMovies } from "../../actions/index.js";
 import Logo from "../../logo.png";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
-import Favorites from '../Favorites/Favorites.jsx'
+import TextField from "@mui/material/TextField";
+import Favorites from "../Favorites/Favorites.jsx";
 import Menu from "@mui/material/Menu";
 
-export default function NavBar() {
-  const history = useHistory()
+function NavBar({ getMovies }) {
+  const history = useHistory();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
@@ -20,10 +23,24 @@ export default function NavBar() {
     setAnchorEl(null);
   };
 
+  function handleChange(event) {
+    setTitle(event.target.value);
+  }
+
+  function handleSubmit(event) {
+    event.preventDefault();
+    getMovies(title);
+    setTitle("")
+    history.push("/search")
+  }
+
+  const [title, setTitle] = useState();
+
   return (
-    <Box sx={{ flexGrow: 1}}>
+    <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
-        <Toolbar variant="dense" sx={{backgroundColor: "primary.main"}}>
+        <Toolbar variant="dense" sx={{ backgroundColor: "primary.main", display: "flex", justifyContent: "center" }}>
+          <Box display="flex" sx={{position: "absolute", left: 12}}>
           <img
             src={Logo}
             width="30"
@@ -31,12 +48,43 @@ export default function NavBar() {
             alt=""
             style={{ transform: "rotate(-5deg)" }}
           />
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1, ml: 1, textShadow: "1px 1px 5px black"}}>
+          <Typography
+            variant="h6"
+            component="div"
+            sx={{ml: 1, textShadow: "1px 1px 5px black" }}
+          >
             Movies
           </Typography>
-          <Button sx={{ color: "white", textShadow: "1px 1px 5px black" }} size="small" onClick={() => history.push("/")}>Home</Button>
+          </Box>
+
+          <Box display="flex" alignItems="center" justifyContent="center">
+            <form onSubmit={(e) => handleSubmit(e)}>
+              <Box display="flex" alignItems="center" justifyContent="center">
+                <TextField
+                  value={title}
+                  onChange={(e) => handleChange(e)}
+                  variant="standard"
+                  size="small"
+                  autoComplete='off'
+                  InputProps={{ style: { fontSize: 15, width: 200 } }}
+                />
+                <Button sx={{ color: "white", textShadow: "1px 1px 5px black", fontSize: 10}} type="submit" size="small" disabled={!title}>
+                  Search
+                </Button>
+              </Box>
+            </form>
+          </Box>
+
+          <Box sx={{position: "absolute", right: 12}}>
           <Button
-          sx={{ color: "white", textShadow: "1px 1px 5px black" }}
+            sx={{ color: "white", textShadow: "1px 1px 5px black" }}
+            size="small"
+            onClick={() => history.push("/")}
+          >
+            Home
+          </Button>
+          <Button
+            sx={{ color: "white", textShadow: "1px 1px 5px black" }}
             id="basic-button"
             aria-controls="basic-menu"
             aria-haspopup="true"
@@ -55,10 +103,19 @@ export default function NavBar() {
               "aria-labelledby": "basic-button",
             }}
           >
-            <Favorites handleClose={handleClose}/>
+            <Favorites handleClose={handleClose} />
           </Menu>
+          </Box>
         </Toolbar>
       </AppBar>
-          </Box>
+    </Box>
   );
 }
+
+function mapDispatchToProps(dispatch) {
+  return {
+    getMovies: (title) => dispatch(getMovies(title))
+  };
+}
+
+export default connect(null, mapDispatchToProps)(NavBar);

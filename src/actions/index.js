@@ -32,8 +32,14 @@ export function getMovieDetail(id) {
           `https://api.themoviedb.org/3/movie/${id}/credits?api_key=32c20d590617f94bdbbfaad9baf89d61`
         )
           .then((response) => response.json())
-          .then((newJson) => {
-            dispatch({ type: "GET_MOVIE_DETAIL", payload: {...json, cast: newJson.cast, crew: newJson.crew  }});
+          .then((credits) => {
+            fetch(
+              `https://api.themoviedb.org/3/movie/${id}/videos?api_key=32c20d590617f94bdbbfaad9baf89d61`
+            )
+              .then((response) => response.json())
+              .then((video) => {                           
+                dispatch({ type: "GET_MOVIE_DETAIL", payload: {...json, cast: credits.cast, crew: credits.crew, trailer: video.results.find(v => v.type === "Trailer") }});
+              });
           });
       });
   };

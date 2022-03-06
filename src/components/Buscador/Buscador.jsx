@@ -1,15 +1,12 @@
-import React, { useState } from "react";
+import React from "react";
 import { connect } from "react-redux";
 import {
   addMovieFavorite,
   getMovies,
-  removeMovieFavorite,
-  setLoading
+  removeMovieFavorite
 } from "../../actions/index.js";
 import { useHistory } from "react-router-dom";
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
 import IconButton from "@mui/material/IconButton";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
@@ -38,17 +35,9 @@ function Buscador({
   movies,
   loading
 }) {
-  const [title, setTitle] = useState();
   const history = useHistory();
 
-  function handleChange(event) {
-    setTitle(event.target.value);
-  }
-
-  function handleSubmit(event) {
-    event.preventDefault();
-    getMovies(title);
-  }
+  
 
   function handleClickFav(movie) {
     favs.filter((m) => m.id === movie.id).length
@@ -113,21 +102,6 @@ function Buscador({
       alignItems="center"
       sx={{ mx: 5 }}
     >
-      <Box display="flex" alignItems="center" sx={{ mt: 1.5 }}>
-        <form onSubmit={(e) => handleSubmit(e)}>
-          <Box display="flex" alignItems="center">
-            <TextField
-              variant="outlined"
-              size="small"
-              value={title}
-              onChange={(e) => handleChange(e)}
-            />
-            <Button type="submit" variant="outlined" disabled={!title}>
-              Search
-            </Button>
-          </Box>
-        </form>
-      </Box>
       {!loading ? movies.length ?
       <Box sx={{ mt: 1 }}>
         <TransitionGroup>
@@ -137,7 +111,7 @@ function Buscador({
             ))}
           </Grid>
         </TransitionGroup>
-      </Box> : "No se encontraron resultados" : <Box><CircularProgress /></Box>}
+      </Box> : <Box sx={{mt: 1}}>No se encontraron resultados</Box> : <Box><CircularProgress /></Box>}
     </Box>
   );
 }

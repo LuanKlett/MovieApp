@@ -1,5 +1,5 @@
 import React from "react";
-
+import Home from "./components/Home/Home.jsx";
 import Buscador from "./components/Buscador/Buscador.jsx";
 import NavBar from "./components/NavBar/NavBar.jsx";
 import { Route } from "react-router-dom";
@@ -24,7 +24,8 @@ function App() {
       <CssBaseline />
       <React.Fragment>
           <NavBar />
-          <Route exact path="/" component={Buscador} />
+          <Route exact path="/" component={Home} />
+          <Route exact path="/search" component={Buscador} />
           <Route path="/movie/:id" component={Movie} />
       </React.Fragment>
       </ThemeProvider>
