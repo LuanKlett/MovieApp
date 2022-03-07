@@ -4,7 +4,7 @@ export function addMovieFavorite(payload) {
 
 export function getMovies(titulo) {
   return function (dispatch) {
-    dispatch({type: "SET_LOADING"})
+    dispatch({ type: "SET_LOADING" });
     return fetch(
       "https://api.themoviedb.org/3/search/movie?api_key=32c20d590617f94bdbbfaad9baf89d61&query=" +
         titulo
@@ -22,7 +22,7 @@ export function removeMovieFavorite(payload) {
 
 export function getMovieDetail(id) {
   return function (dispatch) {
-    dispatch({type: "SET_LOADING"})
+    dispatch({ type: "SET_LOADING" });
     return fetch(
       `https://api.themoviedb.org/3/movie/${id}?api_key=32c20d590617f94bdbbfaad9baf89d61`
     )
@@ -37,10 +37,30 @@ export function getMovieDetail(id) {
               `https://api.themoviedb.org/3/movie/${id}/videos?api_key=32c20d590617f94bdbbfaad9baf89d61`
             )
               .then((response) => response.json())
-              .then((video) => {                           
-                dispatch({ type: "GET_MOVIE_DETAIL", payload: {...json, cast: credits.cast, crew: credits.crew, trailer: video.results.find(v => v.type === "Trailer") }});
+              .then((video) => {
+                dispatch({
+                  type: "GET_MOVIE_DETAIL",
+                  payload: {
+                    ...json,
+                    cast: credits.cast,
+                    crew: credits.crew,
+                    trailer: video.results.find((v) => v.type === "Trailer"),
+                  },
+                });
               });
           });
+      });
+  };
+}
+
+export function getPopularMovies() {
+  return function (dispatch) {
+    return fetch(
+      `https://api.themoviedb.org/3/discover/movie?api_key=32c20d590617f94bdbbfaad9baf89d61&sort_by=popularity.desc`
+    )
+      .then((response) => response.json())
+      .then((json) => {
+        dispatch({ type: "GET_POPULAR_MOVIES", payload: json.results });
       });
   };
 }

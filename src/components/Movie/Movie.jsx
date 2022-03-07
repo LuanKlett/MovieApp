@@ -55,7 +55,7 @@ function Movie({
           <CardMedia
             component="img"
             alt={detail.title}
-            image={`http://image.tmdb.org/t/p/w780/${detail.poster_path}`}
+            image={detail.poster_path ? `http://image.tmdb.org/t/p/w780/${detail.poster_path}` : '/img/noPoster.png'}
             sx={{objectFit: "contain"}}
           />
         </Grid>
