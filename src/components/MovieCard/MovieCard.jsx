@@ -13,7 +13,6 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
-import Grid from "@mui/material/Grid";
 import { styled } from "@mui/material/styles";
 import Fade from "@mui/material/Fade";
 import Zoom from '@mui/material/Zoom';

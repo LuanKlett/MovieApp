@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { getPopularMovies } from "../../actions/index";
 import Box from "@mui/material/Box";
 import MovieCard from "../MovieCard/MovieCard.jsx";
+import MovieCardLoading from "../MovieCard/MovieCardLoading.jsx";
 import Fade from "@mui/material/Fade";
 import Typography from "@mui/material/Typography";
 import Carousel from "react-multi-carousel";
@@ -38,21 +39,30 @@ function Home({ getPopularMovies, popularMovies }) {
       display="flex"
       flexDirection="column"
       alignItems="center"
-      sx={{ mx: 5, mt: 1}}
+      sx={{ mx: 5, mt: 1 }}
     >
-      <Box sx={{width: "100%"}}>
+      <Box sx={{ width: "100%" }}>
         <Typography variant="h4">Popular Movies</Typography>
-        <Carousel
-          responsive={responsive}
-          infinite
-          >
-          {popularMovies.map((movie, i) => (
-            <Fade timeout={i * 300} key={movie.id} in={true}>
-              <Box sx={{ p: 0.5 }}>
-                <MovieCard movie={movie} />
-              </Box>
-            </Fade>
-          ))}
+        <Carousel responsive={responsive} infinite>
+          {popularMovies.length
+            ? popularMovies.map((movie, i) => (
+                <Fade timeout={i * 300} key={movie.id} in={true}>
+                  <Box sx={{ p: 0.5 }}>
+                    <MovieCard movie={movie} />
+                  </Box>
+                </Fade>
+              ))
+            : (function () {
+                let arr = [];
+                for (let i = 0; i < 12; i++) {
+                  arr.push(<MovieCardLoading />);
+                }
+                return arr;
+              })().map((c, i) => (
+                <Fade timeout={i * 300} key={"l" + i} in={true}>
+                  <Box sx={{ p: 0.5 }}>{c}</Box>
+                </Fade>
+              ))}
         </Carousel>
       </Box>
     </Box>
